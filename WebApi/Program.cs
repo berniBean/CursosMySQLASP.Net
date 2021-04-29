@@ -1,9 +1,12 @@
+using Dominio;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Persistencia;
 using Persistencia.Models;
 using System;
 using System.Collections.Generic;
@@ -23,8 +26,11 @@ namespace WebApi
                 var services = ambiente.ServiceProvider;
                 try
                 {
+                    //para creación de usuarios de prueba
+                    var userManager = services.GetRequiredService<UserManager<Usuario>>();
                     var context = services.GetRequiredService<cursosbasesContext>();
                     context.Database.Migrate();
+                    DataPrueba.InsertarData(context, userManager).Wait();
                 }
                 catch (Exception ex)
                 {
