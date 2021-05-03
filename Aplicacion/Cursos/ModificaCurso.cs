@@ -1,6 +1,7 @@
 ﻿using Aplicacion.ManejadorError;
 using Dominio;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistencia.Models;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ namespace Aplicacion.Cursos
             public string Nombre { get; set; }
             public string Descripcion { get; set; }
             public DateTime? FechaPublicacion { get; set; }
+
+            public List<int> ListaInstructor { get; set; }
         }
 
         public class Handler : IRequestHandler<Ejecuta>
@@ -43,6 +46,32 @@ namespace Aplicacion.Cursos
                 curso.Nombre = request.Nombre ?? curso.Nombre;
                 curso.Descripcion = request.Descripcion ?? curso.Descripcion;
                 curso.FechaPublicacion = request.FechaPublicacion ?? curso.FechaPublicacion;
+
+                if(request.ListaInstructor != null)
+                {
+                    if(request.ListaInstructor.Count > 0)
+                    {
+                        /*Eliminar instructores*/
+                        var instructoresBD = _context.Cursoinstructors.Where(x => x.Idcurso == request.Idcurso).ToList();
+                        foreach(var instructorEliminar in instructoresBD)
+                        {
+                            _context.Cursoinstructors.Remove(instructorEliminar);
+                        }
+
+
+                        /*Agregar instructores de clientes*/
+                        foreach (var id in request.ListaInstructor)
+                        {
+                            var nuevoInstructor = new Cursoinstructor
+                            {
+                                Idcurso = request.Idcurso,
+                                Idinstructor = id
+                            };
+                            _context.Cursoinstructors.Add(nuevoInstructor);
+                        }
+                    }
+                }
+
 
                 var resultado = await _context.SaveChangesAsync();
 

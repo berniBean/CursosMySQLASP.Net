@@ -18,6 +18,8 @@ namespace Aplicacion.Cursos
             public string Nombre { get; set; }
             public string Descripcion { get; set; }
             public DateTime? FechaPublicacion { get; set; }
+
+            public List<int> listaInstructor { get; set; }
         }
 
         public class EjecutaValidator : AbstractValidator<nuevo>
@@ -30,7 +32,7 @@ namespace Aplicacion.Cursos
             }
         }
 
-        
+        //transaccion 
         public class Handler : IRequestHandler<nuevo>
         {
             public readonly cursosbasesContext _context;
@@ -41,14 +43,30 @@ namespace Aplicacion.Cursos
 
             public async Task<Unit> Handle(nuevo request, CancellationToken cancellationToken)
             {
+                int _cursoId = 0;
                 var insertar = new Curso
                 {
+                    Idcurso = _cursoId++,
                     Nombre = request.Nombre,
                     Descripcion = request.Descripcion,
                     FechaPublicacion = request.FechaPublicacion
                 };
 
                 _context.Cursos.Add(insertar);
+
+                if(request.listaInstructor != null)
+                {
+                   
+                    foreach(var id in request.listaInstructor)
+                    {
+                        var cursoInstructor = new Cursoinstructor
+                        {
+                            Idcurso = _cursoId,
+                            Idinstructor = id
+                        };
+                        _context.Cursoinstructors.Add(cursoInstructor);
+                    }
+                }
 
                 var valor = await _context.SaveChangesAsync();
 
