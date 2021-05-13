@@ -19,6 +19,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Persistencia.DapperConexion;
+using Persistencia.DapperConexion.Instructor;
 using Persistencia.Models;
 using Seguridad.TokenSeguridad;
 using System;
@@ -46,6 +48,10 @@ namespace WebApi
             {
                 options.UseMySQL(Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            //configurando dapper
+            services.AddOptions();
+            services.Configure<ConexionConfiguracion>(Configuration.GetSection("ConnectionStrings"));
             //Agregando el servicio de MediatR
             services.AddMediatR(typeof(Consulta.Handler).Assembly);
             //agregando el servicio de Fluent Validation //inyectar authorize para todos los controladores
@@ -82,6 +88,9 @@ namespace WebApi
             services.AddScoped<IUsuarioSesion, UsuarioSesion>();
             //Agregar AutoMapper como servicio
             services.AddAutoMapper(typeof(Consulta.Handler));
+            //agregar Dapper como servicio
+            services.AddTransient<IFactoryConnection, FactoryConnection>();
+            services.AddScoped<IOpInstructor, InstructorRepositorio>();
             
             services.AddSwaggerGen(c =>
             {
