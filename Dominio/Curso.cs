@@ -20,6 +20,8 @@ namespace Dominio
         public DateTime? FechaPublicacion { get; set; }
         public string Fotoportada { get; set; }
 
+        public Precio PrecioPromocion { get; set; }
+
         public virtual ICollection<Comentario> Comentarios { get; set; }
         public virtual ICollection<Cursoinstructor> Cursoinstructors { get; set; }
     }

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Aplicacion.Cursos
 {
@@ -18,8 +19,12 @@ namespace Aplicacion.Cursos
             public string Nombre { get; set; }
             public string Descripcion { get; set; }
             public DateTime? FechaPublicacion { get; set; }
+            public Decimal Precio { get; set; }
+            public Decimal Promocion { get; set; }
 
             public List<int> listaInstructor { get; set; }
+            
+
         }
 
         public class EjecutaValidator : AbstractValidator<nuevo>
@@ -43,10 +48,13 @@ namespace Aplicacion.Cursos
 
             public async Task<Unit> Handle(nuevo request, CancellationToken cancellationToken)
             {
-                int _cursoId = 0;
+                int _cursoId =  await _context.Cursos.OrderByDescending(p => p.Idcurso).Select(r => r.Idcurso).FirstOrDefaultAsync();
+                int _precioId = await _context.Precios.OrderByDescending(p=>p.PrecioId).Select(r=>r.PrecioId).FirstOrDefaultAsync();
+                _cursoId++;
+                _precioId++;
                 var insertar = new Curso
                 {
-                    Idcurso = _cursoId++,
+                    Idcurso = _cursoId,
                     Nombre = request.Nombre,
                     Descripcion = request.Descripcion,
                     FechaPublicacion = request.FechaPublicacion
@@ -68,6 +76,16 @@ namespace Aplicacion.Cursos
                     }
                 }
 
+                //insertar precio de un curso
+                var precioEntidad = new Precio
+                {
+                    PrecioId = _precioId,
+                    CursoId = _cursoId,
+                    PrecioActual = request.Precio,
+                    Promocion = request.Promocion
+                };
+
+                _context.Precios.Add(precioEntidad);
                 var valor = await _context.SaveChangesAsync();
 
                 if(valor >0)

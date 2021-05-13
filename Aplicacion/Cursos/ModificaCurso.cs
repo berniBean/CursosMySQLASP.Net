@@ -23,6 +23,8 @@ namespace Aplicacion.Cursos
             public string Nombre { get; set; }
             public string Descripcion { get; set; }
             public DateTime? FechaPublicacion { get; set; }
+            public Decimal? Precio { get; set; }
+            public Decimal? Promocion { get; set; }
 
             public List<int> ListaInstructor { get; set; }
         }
@@ -37,6 +39,10 @@ namespace Aplicacion.Cursos
 
             public async Task<Unit> Handle(Ejecuta request, CancellationToken cancellationToken)
             {
+                int _precioId = await _context.Precios.OrderByDescending(p => p.PrecioId).Select(r => r.PrecioId).FirstOrDefaultAsync();
+                _precioId++;
+
+
                 var curso = await _context.Cursos.FindAsync(request.Idcurso);
 
                     if (curso == null)
@@ -46,6 +52,23 @@ namespace Aplicacion.Cursos
                 curso.Nombre = request.Nombre ?? curso.Nombre;
                 curso.Descripcion = request.Descripcion ?? curso.Descripcion;
                 curso.FechaPublicacion = request.FechaPublicacion ?? curso.FechaPublicacion;
+
+                /*Actualizar precio del curso*/
+                var precioEntidad = await _context.Precios.Where(x => x.CursoId == curso.Idcurso).FirstOrDefaultAsync();
+                if(precioEntidad != null)
+                {
+                    precioEntidad.Promocion = request.Promocion ?? precioEntidad.Promocion;
+                    precioEntidad.PrecioActual = request.Precio ?? precioEntidad.PrecioActual;
+                }
+                else
+                {
+                    precioEntidad = new Precio
+                    {
+                        PrecioId = _precioId,
+                        PrecioActual = request.Precio ?? 0,
+                        Promocion = request.Promocion ?? 0
+                    };
+                }
 
                 if(request.ListaInstructor != null)
                 {

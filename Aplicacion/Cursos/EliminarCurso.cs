@@ -28,6 +28,13 @@ namespace Aplicacion.Cursos
 
             public async Task<Unit> Handle(Ejecuta request, CancellationToken cancellationToken)
             {
+                var InsturctorDB = _context.Cursoinstructors.Where(x=> x.Idcurso == request.Idcurso);
+
+                foreach (var instructor in InsturctorDB)
+                {
+                    _context.Cursoinstructors.Remove(instructor);
+                }
+
                 var eliminaCurso = await _context.Cursos.FindAsync(request.Idcurso);
                 if (eliminaCurso == null)
                     //throw new Exception("No existe el registro");
