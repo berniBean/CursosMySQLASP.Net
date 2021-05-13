@@ -66,8 +66,10 @@ namespace Aplicacion.Cursos
                     {
                         PrecioId = _precioId,
                         PrecioActual = request.Precio ?? 0,
-                        Promocion = request.Promocion ?? 0
+                        Promocion = request.Promocion ?? 0,
+                        CursoId = curso.Idcurso
                     };
+                   await _context.Precios.AddAsync(precioEntidad);
                 }
 
                 if(request.ListaInstructor != null)

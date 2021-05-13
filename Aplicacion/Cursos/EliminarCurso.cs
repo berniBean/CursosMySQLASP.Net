@@ -35,6 +35,16 @@ namespace Aplicacion.Cursos
                     _context.Cursoinstructors.Remove(instructor);
                 }
 
+                var comentarioDB = _context.Comentarios.Where(x => x.CursoId == request.Idcurso);
+                foreach (var item in comentarioDB)
+                {
+                    _context.Comentarios.Remove(item);
+                }
+
+                var precioDB = _context.Precios.Where(x => x.CursoId == request.Idcurso).FirstOrDefault();
+                if (precioDB != null)
+                    _context.Precios.Remove(precioDB);
+
                 var eliminaCurso = await _context.Cursos.FindAsync(request.Idcurso);
                 if (eliminaCurso == null)
                     //throw new Exception("No existe el registro");
