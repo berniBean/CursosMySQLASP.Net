@@ -32,14 +32,15 @@ namespace Aplicacion.Instructores
 
         public class handler : IRequestHandler<Ejecuta>
         {
-            private readonly InstructorRepositorio _instructorRepositorio;
-            public handler(InstructorRepositorio instructorRepositorio)
+            //private readonly InstructorRepositorio _instructorRepositorio;
+            private readonly IOpInstructor _iOptInstructor;
+            public handler(IOpInstructor iOptInstructor)
             {
-                _instructorRepositorio = instructorRepositorio;
+                _iOptInstructor = iOptInstructor;
             }
             public async Task<Unit> Handle(Ejecuta request, CancellationToken cancellationToken)
             {
-              var resultado =  await _instructorRepositorio.Nuevo(
+              var resultado =  await _iOptInstructor.Nuevo(
                        request.Nombre,
                        request.Apellidos,
                        request.Grado
