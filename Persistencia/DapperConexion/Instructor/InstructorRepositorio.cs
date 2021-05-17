@@ -26,12 +26,10 @@ namespace Persistencia.DapperConexion.Instructor
             throw new NotImplementedException();
         }
 
-        public async Task<int> Nuevo(InstructorModel parametro)
+        public async Task<int> Nuevo(string nombre, string apellidos, string titulo)
         {
-            var storeProcedure = "InstructorNuevo";
+            var storeProcedure = "instructor_nuevo";
             
-            var _id = parametro.idinstructor;
-            _id = _id++;
             try
             {
                 var connection = _factoryConnection.GetConnection();
@@ -39,11 +37,11 @@ namespace Persistencia.DapperConexion.Instructor
                    storeProcedure, 
                    new
                 {
-                    idInstructor = _id,
-                    Nombre  = parametro.Nombre,
-                    Apellidos = parametro.Apellidos,
-                    Titulo = parametro.Grado
-                }, commandType: CommandType.StoredProcedure);
+
+                       _nombre = nombre,
+                       _apellidos = apellidos,
+                       _grado = titulo
+                   }, commandType: CommandType.StoredProcedure);
 
                 _factoryConnection.CloseConnection();
 
