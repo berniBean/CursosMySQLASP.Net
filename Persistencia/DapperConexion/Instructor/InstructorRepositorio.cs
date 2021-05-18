@@ -16,14 +16,67 @@ namespace Persistencia.DapperConexion.Instructor
         {
             _factoryConnection = factoryConnection;
         }
-        public Task<int> Actualizar(InstructorModel paramaetro)
+        public async Task<int> Actualizar(int Idinstructor, string nombre, string apellidos, string titulo)
         {
-            throw new NotImplementedException();
+            var storeProcedure = "instructor_editar";
+
+            try
+            {
+                var connection = _factoryConnection.GetConnection();
+                var resultado = await connection.ExecuteAsync(
+                                  storeProcedure,
+                                  new
+                                  {
+                                      
+                                      _Idinstructor  = Idinstructor,
+                                      _nombre = nombre,
+                                      _apellidos = apellidos,
+                                      _grado = titulo
+                                  }, commandType: CommandType.StoredProcedure);
+
+                _factoryConnection.CloseConnection();
+                return resultado;
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("{No se pudo modificar instructorS } ", ex);
+            }
+            finally
+            {
+                _factoryConnection.CloseConnection();
+            }
         }
 
-        public Task<int> Eliminar(int id)
+        public async Task<int> Eliminar(int Idinstructor)
         {
-            throw new NotImplementedException();
+            var storeProcedure = "eliminarInstructor";
+
+            try
+            {
+                var connection = _factoryConnection.GetConnection();
+                var resultado = await connection.ExecuteAsync(
+                                 storeProcedure,
+                                 new
+                                 {
+
+                                     _Idinstructor = Idinstructor
+
+                                 }, commandType: CommandType.StoredProcedure);
+
+                _factoryConnection.CloseConnection();
+                return resultado;
+
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("{No se pudo eliminar instructor } ", ex);
+            }
+            finally
+            {
+                _factoryConnection.CloseConnection();
+            }
         }
 
         public async Task<int> Nuevo(string nombre, string apellidos, string titulo)
@@ -52,6 +105,10 @@ namespace Persistencia.DapperConexion.Instructor
 
                 throw new Exception("{No se pudo insertar instructorS } ", ex);
             }
+            finally
+            {
+                _factoryConnection.CloseConnection();
+            }
         }
 
         public async Task<IEnumerable<InstructorModel>> ObtenerLista()
@@ -63,7 +120,10 @@ namespace Persistencia.DapperConexion.Instructor
             {
                 var connection = _factoryConnection.GetConnection();
                 
-                instructorList = await connection.QueryAsync<InstructorModel>(stProc, null,commandType: CommandType.StoredProcedure);
+                instructorList = await connection.QueryAsync<InstructorModel>(stProc,
+                    null,commandType: CommandType.StoredProcedure);
+
+                _factoryConnection.CloseConnection();
             }
             catch (Exception ex)
             {
@@ -76,9 +136,37 @@ namespace Persistencia.DapperConexion.Instructor
             return instructorList;
         }
 
-        public Task<InstructorModel> ObtenerPorId(int id)
+        public async Task<InstructorModel> ObtenerPorId(int id)
         {
-            throw new NotImplementedException();
+            var storeProcedure = "buscarInstructor";
+            InstructorModel instructor = null;
+            try
+            {
+                var connection = _factoryConnection.GetConnection();
+
+                instructor = await connection.QueryFirstAsync<InstructorModel>(storeProcedure, 
+                    new
+                    {
+                        _idInstructor = id
+                    },
+                    commandType: CommandType.StoredProcedure);
+
+                _factoryConnection.CloseConnection();
+                
+
+                
+            }
+            catch (Exception ex)
+            {
+
+                throw new Exception("{No se encontró el dato } ", ex);
+            }
+            finally
+            {
+                _factoryConnection.CloseConnection();
+            }
+            return instructor;
+
         }
     }
 }

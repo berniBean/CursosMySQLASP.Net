@@ -25,5 +25,25 @@ namespace WebApi.Controllers
         {
             return await Mediator.Send(data);
         }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Unit>> Editar(int id,EditarInstructor.Ejecuta data)
+        {
+            data.Idinstructor = id;
+            return await Mediator.Send(data);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Unit>> Eliminar(int id)
+        {
+            
+            return await Mediator.Send(new EliminarInstructor.Ejecuta{ Idinstructor = id});
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<InstructorModel>> ObtenerPorId (int id)
+        {
+            return await Mediator.Send(new ConsultaInstructorId.Ejecuta { Idinstructor = id });
+        }
     }
 }
